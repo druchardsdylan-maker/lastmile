@@ -19,6 +19,7 @@ function geoNearestNeighbor(warehouseLatLng, stops, businessesFirst = false) {
     let cur = startLatLng;
     while (rem.length > 0) {
       let bestIdx = 0, bestDist = Infinity;
+      // eslint-disable-next-line no-loop-func
       rem.forEach((s, i) => {
         const d = dist2(s, cur);
         if (d < bestDist) { bestDist = d; bestIdx = i; }
@@ -85,6 +86,7 @@ async function optimizeWithOSRM(warehouse, stops, businessesFirst = false) {
     while (rem.length > 0) {
       let best = 0;
       let bestT = Infinity;
+      // eslint-disable-next-line no-loop-func
       rem.forEach((mi, i) => {
         if (matrix[cur][mi] < bestT) { bestT = matrix[cur][mi]; best = i; }
       });
@@ -147,6 +149,7 @@ function rightHandRoute(startLatLng, stops, prevLatLng) {
     const hy = cur[0] - prev[0];
     const hMag = Math.hypot(hx, hy) || 0.001;
 
+    // eslint-disable-next-line no-loop-func
     remaining.forEach((s, i) => {
       const dx = s.lng - cur[1];
       const dy = s.lat - cur[0];
@@ -373,7 +376,7 @@ export default function App() {
     optimizeWithOSRM(WAREHOUSE, all, businessesFirst)
       .then((route) => { setOptimizedRoute(route); setRouteOptimizing(false); })
       .catch(() => { setRouteOptimizing(false); });
-  }, [stopTypes, dynamicStops, businessesFirst]);
+  }, [stopTypes, dynamicStops, businessesFirst]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-navigate to results when real processing + optimization both finish
   useEffect(() => {
@@ -1438,7 +1441,7 @@ function MapView({ orderedStops, completedStops, remaining }) {
       try { map.remove(); } catch (e) {}
       mapRef.current = null;
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div>
