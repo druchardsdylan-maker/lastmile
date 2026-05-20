@@ -18,56 +18,22 @@ function saveCorrections() {
   fs.writeFileSync(CORRECTIONS_FILE, JSON.stringify(corrections, null, 2));
 }
 
-// Geocoding cache — SQLite database, persists forever, shared across all drivers
-const Database = require("better-sqlite3");
-const db = new Database(path.join(__dirname, "geocache.db"));
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS geocache (
-    key        TEXT PRIMARY KEY,
-    address    TEXT NOT NULL,
-    zip        TEXT,
-    lat        REAL NOT NULL,
-    lng        REAL NOT NULL,
-    source     TEXT,
-    hits       INTEGER DEFAULT 1,
-    created_at INTEGER DEFAULT (unixepoch()),
-    last_hit   INTEGER DEFAULT (unixepoch())
-  )
-`);
-
-// Migrate any existing geocache.json into SQLite (runs once, then ignored)
-try {
-  const old = JSON.parse(fs.readFileSync(path.join(__dirname, "geocache.json"), "utf8"));
-  const ins = db.prepare("INSERT OR IGNORE INTO geocache (key,address,zip,lat,lng,source) VALUES (?,?,?,?,?,?)");
-  const migrate = db.transaction((entries) => {
-    for (const [key, v] of entries) {
-      const [addr, zip] = key.split("|");
-      ins.run(key, addr, zip || "", v.lat, v.lng, v.source || "cached");
-    }
-  });
-  migrate(Object.entries(old));
-  console.log(`Migrated ${Object.keys(old).length} cached addresses to SQLite`);
-} catch (_) {}
-
-const _dbGet = db.prepare("SELECT lat, lng, source FROM geocache WHERE key = ?");
-const _dbIns = db.prepare(`
-  INSERT INTO geocache (key,address,zip,lat,lng,source) VALUES (?,?,?,?,?,?)
-  ON CONFLICT(key) DO UPDATE SET hits=hits+1, last_hit=unixepoch()
-`);
-const _dbHit = db.prepare("UPDATE geocache SET hits=hits+1, last_hit=unixepoch() WHERE key=?");
-
+// Geocoding cache — JSON file, persists forever, shared across all drivers
+const GEOCACHE_FILE = path.join(__dirname, "geocache.json");
+let geocache = {};
+try { geocache = JSON.parse(fs.readFileSync(GEOCACHE_FILE, "utf8")); } catch (_) {}
+function saveGeocache() {
+  try { fs.writeFileSync(GEOCACHE_FILE, JSON.stringify(geocache)); } catch (_) {}
+}
 function geocacheKey(address, zip) {
   return `${address.trim().toLowerCase()}|${String(zip || "").trim()}`;
 }
 function cacheHit(address, zip) {
-  const key = geocacheKey(address, zip);
-  const row = _dbGet.get(key);
-  if (row) { _dbHit.run(key); return row; }
-  return null;
+  return geocache[geocacheKey(address, zip)] || null;
 }
 function cacheSet(address, zip, lat, lng, source) {
-  try { _dbIns.run(geocacheKey(address, zip), address.trim().toLowerCase(), zip || "", lat, lng, source); } catch (_) {}
+  geocache[geocacheKey(address, zip)] = { lat, lng, source };
+  saveGeocache();
 }
 
 app.post("/community/correct", (req, res) => {
@@ -432,18 +398,17 @@ Use the classify_stops tool.`
 app.get("/health", (_, res) => res.json({ ok: true }));
 
 app.get("/cache/stats", (_, res) => {
-  const total   = db.prepare("SELECT COUNT(*) as n FROM geocache").get().n;
-  const hits    = db.prepare("SELECT SUM(hits) as n FROM geocache").get().n || 0;
-  const sources = db.prepare("SELECT source, COUNT(*) as n FROM geocache GROUP BY source ORDER BY n DESC").all();
-  const top     = db.prepare("SELECT address, zip, hits FROM geocache ORDER BY hits DESC LIMIT 20").all();
-  res.json({ total, totalHits: hits, sources, top });
+  const entries = Object.entries(geocache);
+  const sources = {};
+  entries.forEach(([, v]) => { sources[v.source || "unknown"] = (sources[v.source || "unknown"] || 0) + 1; });
+  res.json({ total: entries.length, sources });
 });
 
 app.delete("/cache/entry", (req, res) => {
   const { address, zip } = req.body;
   if (!address) return res.status(400).json({ error: "Missing address" });
-  const key = geocacheKey(address, zip || "");
-  db.prepare("DELETE FROM geocache WHERE key=?").run(key);
+  delete geocache[geocacheKey(address, zip || "")];
+  saveGeocache();
   res.json({ ok: true });
 });
 
