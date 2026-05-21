@@ -527,9 +527,9 @@ export default function App() {
           body: JSON.stringify({
             addresses: unique.map((a) => ({
               address: normalizeAddress(a.address),
-              city: a.city || defaultCity,
-              state: a.state || defaultState,
-              zip: a.zip || defaultZip,
+              city: (!a.city || a.city.toLowerCase().includes("unknown") || a.city.trim() === "") ? defaultCity : a.city,
+              state: (!a.state || a.state.toLowerCase().includes("unknown") || a.state.trim() === "") ? defaultState : a.state,
+              zip: (!a.zip || a.zip.toLowerCase().includes("unknown") || a.zip.replace(/\D/g,"") === "") ? defaultZip : a.zip,
             })),
           }),
         }).then((r) => r.json());
