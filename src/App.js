@@ -358,6 +358,9 @@ export default function App() {
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [keyVisible, setKeyVisible] = useState(false);
   const [businessesFirst, setBusinessesFirst] = useState(() => localStorage.getItem("lm_biz_first") === "true");
+  const [defaultCity, setDefaultCity] = useState(() => localStorage.getItem("lm_default_city") || "");
+  const [defaultState, setDefaultState] = useState(() => localStorage.getItem("lm_default_state") || "FL");
+  const [defaultZip, setDefaultZip] = useState(() => localStorage.getItem("lm_default_zip") || "");
   const [failedStops, setFailedStops] = useState([]);
   const [fixingStop, setFixingStop] = useState(null);
   const [fixInput, setFixInput] = useState("");
@@ -524,7 +527,9 @@ export default function App() {
           body: JSON.stringify({
             addresses: unique.map((a) => ({
               address: normalizeAddress(a.address),
-              city: a.city, state: a.state, zip: a.zip,
+              city: a.city || defaultCity,
+              state: a.state || defaultState,
+              zip: a.zip || defaultZip,
             })),
           }),
         }).then((r) => r.json());
@@ -1119,6 +1124,35 @@ export default function App() {
               <span />
             </div>
             <div style={{ padding: "24px 20px" }}>
+              {/* Default Delivery Area */}
+              <div style={{ background: "#161616", borderRadius: 12, padding: "16px", border: "1px solid #2a2a2a", marginBottom: 24 }}>
+                <div style={{ fontSize: 13, color: "#fff", fontWeight: "bold", letterSpacing: "0.05em", marginBottom: 4 }}>DEFAULT DELIVERY AREA</div>
+                <div style={{ fontSize: 11, color: "#555", marginBottom: 12, lineHeight: 1.5 }}>Used when your route screen doesn't show city/zip (Amazon Flex, etc.)</div>
+                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                  <input
+                    style={{ ...styles.notesInput, flex: 2 }}
+                    placeholder="City (e.g. Tampa)"
+                    value={defaultCity}
+                    onChange={(e) => { setDefaultCity(e.target.value); localStorage.setItem("lm_default_city", e.target.value); }}
+                  />
+                  <input
+                    style={{ ...styles.notesInput, flex: 1 }}
+                    placeholder="ST"
+                    maxLength={2}
+                    value={defaultState}
+                    onChange={(e) => { setDefaultState(e.target.value.toUpperCase()); localStorage.setItem("lm_default_state", e.target.value.toUpperCase()); }}
+                  />
+                </div>
+                <input
+                  style={styles.notesInput}
+                  placeholder="ZIP code (e.g. 33610)"
+                  value={defaultZip}
+                  maxLength={5}
+                  onChange={(e) => { setDefaultZip(e.target.value); localStorage.setItem("lm_default_zip", e.target.value); }}
+                />
+                {defaultCity && <div style={{ fontSize: 11, color: "#4CAF50", marginTop: 8 }}>✓ Using {defaultCity}, {defaultState} {defaultZip} as fallback</div>}
+              </div>
+
               {/* Businesses First toggle */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#161616", borderRadius: 12, padding: "16px", border: "1px solid #2a2a2a", marginBottom: 24 }}>
                 <div>
