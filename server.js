@@ -245,15 +245,15 @@ app.post("/geocode-batch", async (req, res) => {
       .replace(/\s+/g, " ").trim();
   }
 
-  // Only send Census misses to Nominatim — 1 at a time to respect 1 req/sec limit
+  // Nominatim fallback — cap at 60 addresses max to prevent 9-min waits on Railway
   const nomFallbacks = results.reduce((acc, r, i) => { if (!r.lat) acc.push([i, addresses[i]]); return acc; }, []);
-  for (const [idx, a] of nomFallbacks) {
+  const nomCapped = nomFallbacks.slice(0, 60);
+  if (nomFallbacks.length > 60) console.log(`Nominatim capped at 60 of ${nomFallbacks.length} misses to keep response time reasonable`);
+  for (const [idx, a] of nomCapped) {
     const clean = cleanForNominatim(a.address);
-    const streetOnly = clean.replace(/^\d+\s*/, "").trim(); // "1805 N 16th St" → "N 16th St"
-    // Try 1: full address no zip (Nominatim strict zip matching breaks house-number lookup)
+    const streetOnly = clean.replace(/^\d+\s*/, "").trim();
     let nom = await fetchUrl(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(clean + ", " + a.city + ", " + a.state)}&format=json&limit=1`);
     await new Promise((r) => setTimeout(r, 1100));
-    // Try 2: street-only if still not found (gets street-level coords, close enough for routing)
     if (!nom?.[0] && streetOnly) {
       nom = await fetchUrl(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(streetOnly + ", " + a.city + ", " + a.state)}&format=json&limit=1`);
       await new Promise((r) => setTimeout(r, 1100));

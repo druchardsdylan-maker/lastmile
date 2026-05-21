@@ -1559,6 +1559,9 @@ const styles = {
 
   // NAV BAR
   navBar: {
+    position: "sticky",
+    top: 0,
+    zIndex: 50,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
