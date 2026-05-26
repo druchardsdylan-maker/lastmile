@@ -6,8 +6,11 @@ const path = require("path");
 
 const app = express();
 
+// Data directory — set DATA_DIR env var on Railway Volume to survive deploys
+const DATA_DIR = process.env.DATA_DIR || __dirname;
+
 // Community corrections — persisted to disk
-const CORRECTIONS_FILE = path.join(__dirname, "corrections.json");
+const CORRECTIONS_FILE = path.join(DATA_DIR, "corrections.json");
 let corrections = {};
 try { corrections = JSON.parse(fs.readFileSync(CORRECTIONS_FILE, "utf8")); } catch (_) {}
 
@@ -19,7 +22,7 @@ function saveCorrections() {
 }
 
 // Geocoding cache — JSON file, persists forever, shared across all drivers
-const GEOCACHE_FILE = path.join(__dirname, "geocache.json");
+const GEOCACHE_FILE = path.join(DATA_DIR, "geocache.json");
 let geocache = {};
 try { geocache = JSON.parse(fs.readFileSync(GEOCACHE_FILE, "utf8")); } catch (_) {}
 function saveGeocache() {
@@ -265,10 +268,33 @@ app.post("/geocode-batch", async (req, res) => {
     }
   }
 
+  // Step 3: Google Maps for remaining misses — requires GOOGLE_MAPS_KEY env var
+  const googleKey = process.env.GOOGLE_MAPS_KEY;
+  if (googleKey) {
+    const googleFallbacks = results.reduce((acc, r, i) => { if (!r.lat) acc.push([i, addresses[i]]); return acc; }, []);
+    if (googleFallbacks.length > 0) {
+      console.log(`Google Maps: trying ${googleFallbacks.length} addresses Census+Nominatim couldn't find`);
+      for (const [idx, a] of googleFallbacks) {
+        const fullAddr = [a.address, a.city, a.state, a.zip].filter(Boolean).join(", ").replace(/\s+/g, " ").trim();
+        const gResult = await fetchUrl(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(fullAddr)}&key=${googleKey}`);
+        if (gResult?.status === "OK" && gResult.results?.[0]) {
+          const loc = gResult.results[0].geometry.location;
+          const lat = loc.lat, lng = loc.lng;
+          if (!isNaN(lat) && !isNaN(lng) && lat > 20 && lat < 55 && lng < -60) {
+            results[idx] = { lat, lng, source: "google" };
+            cacheSet(a.address, a.zip, lat, lng, "google");
+          }
+        }
+        await new Promise((r) => setTimeout(r, 50));
+      }
+    }
+  }
+
   const censusMatched = results.filter((r) => r.source === "census").length;
   const nomMatched = results.filter((r) => r.source === "nominatim").length;
+  const googleMatched = results.filter((r) => r.source === "google").length;
   const failed = results.map((r, i) => [r, addresses[i]]).filter(([r]) => !r.lat).map(([, a]) => `${a.address}, ${a.city} ${a.zip}`);
-  console.log(`Batch geocoded ${addresses.length} addresses — ${censusMatched} Census, ${nomMatched} Nominatim, ${failed.length} failed — ${Date.now() - t0}ms`);
+  console.log(`Batch geocoded ${addresses.length} addresses — ${censusMatched} Census, ${nomMatched} Nominatim, ${googleMatched} Google, ${failed.length} failed — ${Date.now() - t0}ms`);
   if (failed.length) console.log(`Failed addresses:\n${failed.map((a, i) => `  ${i + 1}. ${a}`).join("\n")}`);
   res.json({ results });
 });
@@ -401,7 +427,7 @@ app.get("/cache/stats", (_, res) => {
   const entries = Object.entries(geocache);
   const sources = {};
   entries.forEach(([, v]) => { sources[v.source || "unknown"] = (sources[v.source || "unknown"] || 0) + 1; });
-  res.json({ total: entries.length, sources });
+  res.json({ total: entries.length, sources, dataDir: DATA_DIR, hasGoogleKey: !!process.env.GOOGLE_MAPS_KEY });
 });
 
 app.delete("/cache/entry", (req, res) => {

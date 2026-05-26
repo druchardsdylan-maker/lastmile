@@ -367,6 +367,7 @@ export default function App() {
   const [fixStatus, setFixStatus] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [editingNoteId, setEditingNoteId] = useState(null);
+  const [googleActive, setGoogleActive] = useState(null);
   const fileRef = useRef();
 
   const activeStops = dynamicStops || mockStops;
@@ -972,7 +973,15 @@ export default function App() {
             </div>
 
             <div style={styles.detailActions}>
-              <button style={styles.navBtn}>
+              <button
+                style={styles.navBtn}
+                onClick={() => {
+                  const url = activeStop.lat
+                    ? `https://maps.google.com/maps?daddr=${activeStop.lat},${activeStop.lng}`
+                    : `https://maps.google.com/maps?daddr=${encodeURIComponent(activeStop.address + ", " + activeStop.city)}`;
+                  window.open(url, "_blank");
+                }}
+              >
                 🧭 Navigate
               </button>
               <button
@@ -1124,6 +1133,29 @@ export default function App() {
               <span />
             </div>
             <div style={{ padding: "24px 20px" }}>
+              {/* Google Maps status */}
+              <div
+                style={{ background: "#161616", borderRadius: 12, padding: "16px", border: "1px solid #2a2a2a", marginBottom: 24, cursor: "pointer" }}
+                onClick={async () => {
+                  setGoogleActive("checking");
+                  try {
+                    const d = await fetch("/cache/stats").then((r) => r.json());
+                    setGoogleActive(d.hasGoogleKey ? "active" : "missing");
+                  } catch (_) {
+                    setGoogleActive("error");
+                  }
+                }}
+              >
+                <div style={{ fontSize: 13, color: "#fff", fontWeight: "bold", letterSpacing: "0.05em", marginBottom: 4 }}>GOOGLE MAPS GEOCODING</div>
+                <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5, marginBottom: googleActive ? 8 : 0 }}>
+                  Finds private roads &amp; golf communities Census/Nominatim miss. Set GOOGLE_MAPS_KEY in Railway env vars.
+                </div>
+                {googleActive === "checking" && <div style={{ fontSize: 11, color: "#F5A623" }}>Checking...</div>}
+                {googleActive === "active" && <div style={{ fontSize: 11, color: "#4CAF50" }}>✓ Google Maps active — hard-to-find roads will now geocode</div>}
+                {googleActive === "missing" && <div style={{ fontSize: 11, color: "#ff6b6b" }}>✗ Key not set — add GOOGLE_MAPS_KEY to Railway environment variables</div>}
+                {googleActive === "error" && <div style={{ fontSize: 11, color: "#ff6b6b" }}>✗ Couldn't reach server</div>}
+                {!googleActive && <div style={{ fontSize: 11, color: "#444", marginTop: 6 }}>Tap to check status</div>}
+              </div>
               {/* Default Delivery Area */}
               <div style={{ background: "#161616", borderRadius: 12, padding: "16px", border: "1px solid #2a2a2a", marginBottom: 24 }}>
                 <div style={{ fontSize: 13, color: "#fff", fontWeight: "bold", letterSpacing: "0.05em", marginBottom: 4 }}>DEFAULT DELIVERY AREA</div>
