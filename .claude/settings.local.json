@@ -43,7 +43,8 @@
       "Bash(git config *)",
       "Bash(del package-lock.json)",
       "Bash(git push *)",
-      "WebFetch(domain:cdn.discordapp.com)"
+      "WebFetch(domain:cdn.discordapp.com)",
+      "Bash(npm list *)"
     ]
   }
 }

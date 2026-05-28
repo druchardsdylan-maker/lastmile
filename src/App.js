@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet-rotate";
 
 const WAREHOUSE = [27.9555, -82.4274]; // Restaurant Depot area, Tampa 50th
 
@@ -1493,6 +1494,9 @@ function MapView({ orderedStops, completedStops, remaining }) {
         center: [28.229, -82.186],
         zoom: 15,
         zoomControl: true,
+        rotate: true,
+        touchRotate: true,
+        rotateControl: { closeOnZeroBearing: false },
       });
     } catch (e) {
       return;
@@ -1521,20 +1525,20 @@ function MapView({ orderedStops, completedStops, remaining }) {
 
       let pinW, pinH, fill, stroke, strokeW, numColor, numSize, topLabel;
       if (isNext) {
-        pinW = 44; pinH = 54;
-        fill = "#fff"; stroke = "#00C8FF"; strokeW = 3;
-        numColor = "#000"; numSize = 15;
-        topLabel = `<tspan x="22" dy="-4" font-size="8" font-weight="900" letter-spacing="1">NEXT</tspan><tspan x="22" dy="13" font-size="15" font-weight="900">${i + 1}</tspan>`;
+        pinW = 32; pinH = 40;
+        fill = "#fff"; stroke = "#00C8FF"; strokeW = 2.5;
+        numColor = "#000"; numSize = 12;
+        topLabel = `<tspan x="16" dy="-3" font-size="6" font-weight="900" letter-spacing="1">NXT</tspan><tspan x="16" dy="11" font-size="12" font-weight="900">${i + 1}</tspan>`;
       } else if (done) {
-        pinW = 26; pinH = 32;
-        fill = "#ccc"; stroke = "#aaa"; strokeW = 1.5;
-        numColor = "#888"; numSize = 11;
-        topLabel = `<tspan x="13" dy="0" font-size="11">✓</tspan>`;
+        pinW = 16; pinH = 20;
+        fill = "#1E1E35"; stroke = "#2A2A45"; strokeW = 1;
+        numColor = "#3A3A5C"; numSize = 8;
+        topLabel = `<tspan x="8" dy="0" font-size="8">✓</tspan>`;
       } else {
-        pinW = 36; pinH = 44;
+        pinW = 26; pinH = 32;
         fill = stop.type === "business" ? "#F59E0B" : "#22D47A";
-        stroke = "#fff"; strokeW = 2.5;
-        numColor = "#000"; numSize = 14;
+        stroke = "#fff"; strokeW = 1.5;
+        numColor = "#000"; numSize = 10;
         topLabel = `<tspan x="${pinW / 2}" dy="0" font-size="${numSize}" font-weight="900">${i + 1}</tspan>`;
       }
 
@@ -1597,43 +1601,7 @@ function MapView({ orderedStops, completedStops, remaining }) {
       );
     }
 
-    const stopCoords = orderedStops.filter((s) => s.lat).map((s) => [s.lat, s.lng]);
-    const allCoords = [WAREHOUSE, ...stopCoords];
     const controller = new AbortController();
-
-    // Chunk route calls into segments of 18 waypoints — public OSRM limits per-call waypoints
-    (async () => {
-      const MAX_WP = 18;
-      const allRoadCoords = [];
-      try {
-        for (let i = 0; i < allCoords.length - 1; i += MAX_WP - 1) {
-          if (destroyed) return;
-          const chunk = allCoords.slice(i, Math.min(i + MAX_WP, allCoords.length));
-          if (chunk.length < 2) break;
-          const waypointStr = chunk.map(([lat, lng]) => `${lng},${lat}`).join(";");
-          const r = await fetch(
-            `https://router.project-osrm.org/route/v1/driving/${waypointStr}?overview=full&geometries=geojson`,
-            { signal: controller.signal }
-          );
-          const data = await r.json();
-          if (data.routes?.[0]) {
-            data.routes[0].geometry.coordinates.forEach(([lng, lat]) => allRoadCoords.push([lat, lng]));
-          } else {
-            chunk.forEach((c) => allRoadCoords.push(c));
-          }
-          if (i + MAX_WP - 1 < allCoords.length - 1) {
-            await new Promise((r) => setTimeout(r, 200));
-          }
-        }
-        if (!destroyed && allRoadCoords.length > 1) {
-          L.polyline(allRoadCoords, { color: "#00C8FF", weight: 3, opacity: 0.75 }).addTo(map);
-        }
-      } catch (_) {
-        if (!destroyed && allCoords.length > 1) {
-          L.polyline(allCoords, { color: "#00C8FF", weight: 2.5, dashArray: "6 4", opacity: 0.7 }).addTo(map);
-        }
-      }
-    })();
 
     return () => {
       destroyed = true;
