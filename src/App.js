@@ -342,6 +342,29 @@ const mockStops = [
   { id: 150, address: "35000 Fort King Hwy",      city: "Zephyrhills, FL 33541", type: "business",    name: "Advance Auto",         seq: 150, lat: 28.1705,    lng: -82.1835   },
 ];
 
+function weatherEmoji(code) {
+  if (code === 0) return "☀️";
+  if (code <= 2) return "🌤️";
+  if (code === 3) return "☁️";
+  if (code <= 48) return "🌫️";
+  if (code <= 55) return "🌦️";
+  if (code <= 67) return "🌧️";
+  if (code <= 77) return "❄️";
+  if (code <= 82) return "🌧️";
+  return "⛈️";
+}
+function weatherLabel(code) {
+  if (code === 0) return "Clear";
+  if (code <= 2) return "Mostly Clear";
+  if (code === 3) return "Overcast";
+  if (code <= 48) return "Foggy";
+  if (code <= 55) return "Drizzle";
+  if (code <= 67) return "Rain";
+  if (code <= 77) return "Snow";
+  if (code <= 82) return "Showers";
+  return "Thunderstorm";
+}
+
 export default function App() {
   const [screen, setScreen] = useState(screens.HOME);
   const [photos, setPhotos] = useState([]);
@@ -368,7 +391,27 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [googleActive, setGoogleActive] = useState(null);
+  const [weather, setWeather] = useState(null);
   const fileRef = useRef();
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      try {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        const data = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`
+        ).then((r) => r.json());
+        const c = data.current;
+        setWeather({
+          temp: Math.round(c.temperature_2m),
+          feelsLike: Math.round(c.apparent_temperature),
+          wind: Math.round(c.wind_speed_10m),
+          code: c.weather_code,
+        });
+      } catch (_) {}
+    }, () => {}, { timeout: 10000 });
+  }, []);
 
   const activeStops = dynamicStops || mockStops;
 
@@ -667,36 +710,90 @@ export default function App() {
         {/* HOME */}
         {screen === screens.HOME && (
           <div style={styles.screen}>
-            <div style={styles.homeHero}>
-              <div style={styles.logoMark}>⟳</div>
-              <h1 style={styles.appTitle}>RIGHT HAND<br />TURN PRO</h1>
-              <p style={styles.appTagline}>Smart routing. Every stop. Every time.</p>
+            {/* Header */}
+            <div style={{ padding: "20px 20px 16px", background: "linear-gradient(160deg, #111 60%, #1a1200 100%)", borderBottom: "1px solid #1e1e1e" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                    <span style={{ fontSize: 20, color: "#F5A623" }}>⟳</span>
+                    <span style={{ fontSize: 15, fontWeight: "900", color: "#fff", letterSpacing: "0.08em" }}>RIGHT HAND TURN PRO</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#555", letterSpacing: "0.06em" }}>
+                    {new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
+                  </div>
+                </div>
+                {/* Weather widget */}
+                {weather ? (
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 22, lineHeight: 1 }}>{weatherEmoji(weather.code)}</div>
+                    <div style={{ fontSize: 20, fontWeight: "bold", color: "#fff", lineHeight: 1.1 }}>{weather.temp}°</div>
+                    <div style={{ fontSize: 10, color: "#555" }}>{weatherLabel(weather.code)}</div>
+                    <div style={{ fontSize: 10, color: "#444" }}>Feels {weather.feelsLike}° · {weather.wind}mph</div>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 10, color: "#333" }}>Loading weather...</div>
+                )}
+              </div>
             </div>
 
-            <div style={styles.homeStats}>
-              <div style={styles.statCard}>
-                <span style={styles.statNum}>0</span>
-                <span style={styles.statLabel}>Today's Routes</span>
-              </div>
-              <div style={styles.statCard}>
-                <span style={styles.statNum}>0</span>
-                <span style={styles.statLabel}>Stops Done</span>
-              </div>
-              <div style={styles.statCard}>
-                <span style={styles.statNum}>—</span>
-                <span style={styles.statLabel}>Avg Time</span>
-              </div>
-            </div>
+            <div style={{ padding: "20px 20px 0", display: "flex", flexDirection: "column", gap: 12 }}>
+              {/* New Route — primary action */}
+              <button style={styles.primaryBtn} onClick={() => setScreen(screens.CAPTURE)}>
+                <span style={styles.btnIcon}>📸</span>
+                NEW ROUTE
+              </button>
 
-            <button style={styles.primaryBtn} onClick={() => setScreen(screens.CAPTURE)}>
-              <span style={styles.btnIcon}>📸</span>
-              NEW ROUTE
-            </button>
+              {/* Continue route — only if a route is loaded */}
+              {orderedStops.length > 0 && (
+                <button
+                  style={{ ...styles.primaryBtn, background: "#1a1a1a", color: "#fff", border: "1px solid #333", marginTop: 0 }}
+                  onClick={() => setScreen(screens.RESULTS)}
+                >
+                  <span style={styles.btnIcon}>≡</span>
+                  CONTINUE ROUTE
+                  <span style={{ marginLeft: "auto", fontSize: 11, color: "#555" }}>{remaining.length} left</span>
+                </button>
+              )}
 
-            <div style={styles.homeTips}>
-              <div style={styles.tipRow}><span style={styles.tipDot} />Businesses auto-prioritized first</div>
-              <div style={styles.tipRow}><span style={styles.tipDot} />Right-turn optimized path</div>
-              <div style={styles.tipRow}><span style={styles.tipDot} />Snap multiple DIAD screens</div>
+              {/* Notes */}
+              <button
+                style={{ ...styles.primaryBtn, background: "#161616", color: "#aaa", border: "1px solid #222", marginTop: 0 }}
+                onClick={() => { setScreen(screens.NOTES); setSearchQuery(""); setEditingNoteId(null); }}
+              >
+                <span style={styles.btnIcon}>📝</span>
+                NOTES & SEARCH
+              </button>
+
+              {/* Delivery area status */}
+              <div
+                style={{ background: "#111", borderRadius: 12, padding: "12px 14px", border: `1px solid ${defaultCity ? "#1e2a1e" : "#2a1500"}`, cursor: "pointer" }}
+                onClick={() => setScreen(screens.SETTINGS)}
+              >
+                <div style={{ fontSize: 10, color: "#444", letterSpacing: "0.08em", marginBottom: 4 }}>DELIVERY AREA</div>
+                {defaultCity ? (
+                  <div style={{ fontSize: 13, color: "#4CAF50" }}>✓ {defaultCity}, {defaultState} {defaultZip}</div>
+                ) : (
+                  <div style={{ fontSize: 13, color: "#F5A623" }}>⚠ Not set — tap to configure</div>
+                )}
+              </div>
+
+              {/* Route stats if active */}
+              {orderedStops.length > 0 && (
+                <div style={{ display: "flex", gap: 8 }}>
+                  <div style={styles.statCard}>
+                    <span style={styles.statNum}>{orderedStops.length}</span>
+                    <span style={styles.statLabel}>Total Stops</span>
+                  </div>
+                  <div style={styles.statCard}>
+                    <span style={styles.statNum}>{completedStops.length}</span>
+                    <span style={styles.statLabel}>Delivered</span>
+                  </div>
+                  <div style={styles.statCard}>
+                    <span style={styles.statNum}>{remaining.length}</span>
+                    <span style={styles.statLabel}>Remaining</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1640,8 +1737,8 @@ const styles = {
   statNum: { fontSize: 22, fontWeight: "bold", color: "#F5A623" },
   statLabel: { fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: 1, marginTop: 2, textAlign: "center" },
   primaryBtn: {
-    margin: "20px 20px 0",
-    width: "calc(100% - 40px)",
+    margin: "0",
+    width: "100%",
     padding: "16px",
     background: "#F5A623",
     color: "#000",
