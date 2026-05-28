@@ -42,7 +42,8 @@
       "Bash(git commit *)",
       "Bash(git config *)",
       "Bash(del package-lock.json)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "WebFetch(domain:cdn.discordapp.com)"
     ]
   }
 }

@@ -710,6 +710,19 @@ export default function App() {
               <span />
             </div>
 
+            {!defaultCity && (
+              <div style={{ background: "#2a1500", border: "1px solid #F5A623", borderRadius: 10, margin: "10px 16px 0", padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontSize: 12, color: "#F5A623", fontWeight: "bold" }}>⚠ Delivery area not set!</div>
+                  <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>Stops without city/zip will geocode wrong</div>
+                </div>
+                <button
+                  style={{ background: "#F5A623", border: "none", borderRadius: 8, color: "#000", fontSize: 12, fontWeight: "bold", padding: "8px 14px", cursor: "pointer", fontFamily: "inherit" }}
+                  onClick={() => setScreen(screens.SETTINGS)}
+                >FIX →</button>
+              </div>
+            )}
+
             <div style={styles.captureInstructions}>
               <p style={styles.instrText}>Photograph each DIAD screen.<br />All stops will be extracted automatically.</p>
             </div>
@@ -1463,6 +1476,33 @@ function MapView({ orderedStops, completedStops, remaining }) {
         .bindPopup(`<b style="font-size:13px;">${stop.name || stop.address}</b><br><span style="font-size:11px;color:#888;">${stop.city}</span>${done ? "<br><span style='color:#4CAF50;font-size:11px;'>✓ Delivered</span>" : ""}`);
     });
 
+    // Live truck location — blue pulsing dot
+    let userMarker = null;
+    let watchId = null;
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const { latitude: lat, longitude: lng } = pos.coords;
+          if (!destroyed) {
+            if (userMarker) {
+              userMarker.setLatLng([lat, lng]);
+            } else {
+              const userIcon = L.divIcon({
+                html: `<div style="width:20px;height:20px;border-radius:50%;background:#4A90E2;border:3px solid #fff;box-shadow:0 0 0 4px rgba(74,144,226,0.35)"></div>`,
+                className: "",
+                iconSize: [20, 20],
+                iconAnchor: [10, 10],
+              });
+              userMarker = L.marker([lat, lng], { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
+              userMarker.bindPopup("<b>You are here</b>");
+            }
+          }
+        },
+        () => {},
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+      );
+    }
+
     const stopCoords = orderedStops.filter((s) => s.lat).map((s) => [s.lat, s.lng]);
     const allCoords = [WAREHOUSE, ...stopCoords];
     const controller = new AbortController();
@@ -1504,6 +1544,7 @@ function MapView({ orderedStops, completedStops, remaining }) {
     return () => {
       destroyed = true;
       controller.abort();
+      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
       try { map.remove(); } catch (e) {}
       mapRef.current = null;
     };
@@ -1524,6 +1565,9 @@ function MapView({ orderedStops, completedStops, remaining }) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#666" }}>
           <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#ccc" }} /> Done
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#666" }}>
+          <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#4A90E2", border: "2px solid #fff", boxShadow: "0 0 0 2px rgba(74,144,226,0.4)" }} /> You
         </div>
       </div>
     </div>
