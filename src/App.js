@@ -1484,6 +1484,16 @@ function StopCard({ stop, onTap, onComplete, completed }) {
 function MapView({ orderedStops, completedStops, remaining }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
+  const tileLayerRef = useRef(null);
+  const [satellite, setSatellite] = useState(() => localStorage.getItem("lm_sat") !== "false");
+
+  useEffect(() => {
+    if (!mapRef.current || !tileLayerRef.current) return;
+    const satUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    const streetUrl = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+    tileLayerRef.current.setUrl(satellite ? satUrl : streetUrl);
+    localStorage.setItem("lm_sat", satellite);
+  }, [satellite]);
 
   useEffect(() => {
     if (mapRef.current) return;
@@ -1504,10 +1514,13 @@ function MapView({ orderedStops, completedStops, remaining }) {
     mapRef.current = map;
     let destroyed = false;
 
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-      attribution: "© Esri © DigitalGlobe",
-      maxZoom: 19,
-    }).addTo(map);
+    const initSat = localStorage.getItem("lm_sat") !== "false";
+    tileLayerRef.current = L.tileLayer(
+      initSat
+        ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      { attribution: "© Esri / © CARTO", maxZoom: 19 }
+    ).addTo(map);
 
     // Fit to remaining stops so map focuses on what's ahead
     const focusStops = (remaining && remaining.length > 0 ? remaining : orderedStops).filter((s) => s.lat);
@@ -1615,22 +1628,25 @@ function MapView({ orderedStops, completedStops, remaining }) {
   return (
     <div>
       <div ref={containerRef} style={{ width: "100%", height: "calc(100dvh - 120px)" }} />
-      <div style={{ display: "flex", gap: 16, padding: "10px 20px", borderTop: "1px solid #14142A", justifyContent: "center", background: "#0A0A18" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
-          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#fff", border: "2px solid #00C8FF" }} /> Next
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 16px", borderTop: "1px solid #14142A", background: "#0A0A18" }}>
+        <div style={{ display: "flex", gap: 10, flex: 1, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#3A3A5C" }}>
+            <div style={{ width: 9, height: 12, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#fff", border: "2px solid #00C8FF" }} /> Next
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#3A3A5C" }}>
+            <div style={{ width: 9, height: 12, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#F59E0B" }} /> Biz
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#3A3A5C" }}>
+            <div style={{ width: 9, height: 12, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#22D47A" }} /> Res
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#3A3A5C" }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#4A90E2", border: "1.5px solid #0A0A18", boxShadow: "0 0 0 2px rgba(74,144,226,0.35)" }} /> You
+          </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
-          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#F59E0B" }} /> Business
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
-          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#22D47A" }} /> Residential
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
-          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#2A2A45" }} /> Done
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
-          <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#4A90E2", border: "2px solid #0A0A18", boxShadow: "0 0 0 2px rgba(74,144,226,0.4)" }} /> You
-        </div>
+        <button
+          onClick={() => setSatellite((s) => !s)}
+          style={{ background: satellite ? "#00C8FF" : "#1E1E35", border: "none", borderRadius: 8, color: satellite ? "#000" : "#5A5A80", fontSize: 11, fontWeight: "bold", padding: "6px 12px", cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.05em", flexShrink: 0 }}
+        >{satellite ? "🛰 SAT" : "🗺 MAP"}</button>
       </div>
     </div>
   );
