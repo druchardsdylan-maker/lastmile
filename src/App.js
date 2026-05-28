@@ -1504,8 +1504,8 @@ function MapView({ orderedStops, completedStops, remaining }) {
     mapRef.current = map;
     let destroyed = false;
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-      attribution: "© OpenStreetMap © CARTO",
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      attribution: "© Esri © DigitalGlobe",
       maxZoom: 19,
     }).addTo(map);
 

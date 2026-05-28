@@ -44,7 +44,10 @@
       "Bash(del package-lock.json)",
       "Bash(git push *)",
       "WebFetch(domain:cdn.discordapp.com)",
-      "Bash(npm list *)"
+      "Bash(npm list *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/yaml/package.json'\\).version\\)\")",
+      "Bash(npm ls *)",
+      "Bash(Remove-Item -Recurse -Force node_modules, package-lock.json -ErrorAction SilentlyContinue)"
     ]
   }
 }
