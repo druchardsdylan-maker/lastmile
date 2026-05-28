@@ -585,10 +585,14 @@ export default function App() {
         const geo = batchGeo[i] || { lat: null, lng: null };
         const name = a.name || "";
         const type = name.trim() ? "business" : (a.type || "residential");
+        const isUnknown = (v) => !v || v.toLowerCase().includes("unknown") || v.trim() === "";
+        const dispCity = isUnknown(a.city) ? defaultCity : a.city;
+        const dispState = isUnknown(a.state) ? defaultState : a.state;
+        const dispZip = (!a.zip || a.zip.replace(/\D/g, "") === "") ? defaultZip : a.zip;
         return {
           id: i + 1, seq: i + 1,
           address: a.address,
-          city: `${a.city}, ${a.state} ${a.zip}`,
+          city: `${dispCity}, ${dispState} ${dispZip}`.trim(),
           type, name,
           lat: geo.lat, lng: geo.lng,
         };
