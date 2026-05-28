@@ -711,12 +711,12 @@ export default function App() {
         {screen === screens.HOME && (
           <div style={styles.screen}>
             {/* Header */}
-            <div style={{ padding: "20px 20px 16px", background: "linear-gradient(160deg, #111 60%, #1a1200 100%)", borderBottom: "1px solid #1e1e1e" }}>
+            <div style={{ padding: "20px 20px 16px", background: "linear-gradient(160deg, #07070F 60%, #071018 100%)", borderBottom: "1px solid #14142A" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                    <span style={{ fontSize: 20, color: "#F5A623" }}>⟳</span>
-                    <span style={{ fontSize: 15, fontWeight: "900", color: "#fff", letterSpacing: "0.08em" }}>RIGHT HAND TURN PRO</span>
+                    <span style={{ fontSize: 20, color: "#00C8FF" }}>⟳</span>
+                    <span style={{ fontSize: 15, fontWeight: "900", color: "#E8E8FF", letterSpacing: "0.08em" }}>RIGHT HAND TURN PRO</span>
                   </div>
                   <div style={{ fontSize: 11, color: "#555", letterSpacing: "0.06em" }}>
                     {new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
@@ -771,9 +771,9 @@ export default function App() {
               >
                 <div style={{ fontSize: 10, color: "#444", letterSpacing: "0.08em", marginBottom: 4 }}>DELIVERY AREA</div>
                 {defaultCity ? (
-                  <div style={{ fontSize: 13, color: "#4CAF50" }}>✓ {defaultCity}, {defaultState} {defaultZip}</div>
+                  <div style={{ fontSize: 13, color: "#22D47A" }}>✓ {defaultCity}, {defaultState} {defaultZip}</div>
                 ) : (
-                  <div style={{ fontSize: 13, color: "#F5A623" }}>⚠ Not set — tap to configure</div>
+                  <div style={{ fontSize: 13, color: "#F59E0B" }}>⚠ Not set — tap to configure</div>
                 )}
               </div>
 
@@ -808,13 +808,13 @@ export default function App() {
             </div>
 
             {!defaultCity && (
-              <div style={{ background: "#2a1500", border: "1px solid #F5A623", borderRadius: 10, margin: "10px 16px 0", padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ background: "#0A0A18", border: "1px solid #F59E0B", borderRadius: 10, margin: "10px 16px 0", padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: 12, color: "#F5A623", fontWeight: "bold" }}>⚠ Delivery area not set!</div>
-                  <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>Stops without city/zip will geocode wrong</div>
+                  <div style={{ fontSize: 12, color: "#F59E0B", fontWeight: "bold" }}>⚠ Delivery area not set!</div>
+                  <div style={{ fontSize: 11, color: "#5A5A80", marginTop: 2 }}>Stops without city/zip will geocode wrong</div>
                 </div>
                 <button
-                  style={{ background: "#F5A623", border: "none", borderRadius: 8, color: "#000", fontSize: 12, fontWeight: "bold", padding: "8px 14px", cursor: "pointer", fontFamily: "inherit" }}
+                  style={{ background: "#F59E0B", border: "none", borderRadius: 8, color: "#000", fontSize: 12, fontWeight: "bold", padding: "8px 14px", cursor: "pointer", fontFamily: "inherit" }}
                   onClick={() => setScreen(screens.SETTINGS)}
                 >FIX →</button>
               </div>
@@ -865,7 +865,7 @@ export default function App() {
                 <span style={styles.demoNoteText}>
                   💡 No camera? Tap "Add Screen" to upload from your gallery, or{" "}
                   <span
-                    style={{ color: "#F5A623", cursor: "pointer", textDecoration: "underline" }}
+                    style={{ color: "#00C8FF", cursor: "pointer", textDecoration: "underline" }}
                     onClick={handleProcess}
                   >
                     skip to demo route
@@ -888,13 +888,13 @@ export default function App() {
               <div style={styles.processingSteps}>
                 {photos.length === 0
                   ? processingSteps.map((step, i) => (
-                      <div key={i} style={{ ...styles.processingStep, opacity: i <= processingStep ? 1 : 0.25, color: i === processingStep ? "#F5A623" : i < processingStep ? "#4CAF50" : "#666" }}>
+                      <div key={i} style={{ ...styles.processingStep, opacity: i <= processingStep ? 1 : 0.25, color: i === processingStep ? "#00C8FF" : i < processingStep ? "#22D47A" : "#2A2A45" }}>
                         <span style={styles.stepIcon}>{i < processingStep ? "✓" : i === processingStep ? "▶" : "○"}</span>
                         {step}
                       </div>
                     ))
                   : (
-                      <div style={{ ...styles.processingStep, color: "#F5A623", fontSize: 13 }}>
+                      <div style={{ ...styles.processingStep, color: "#00C8FF", fontSize: 13 }}>
                         <span style={styles.stepIcon}>▶</span>
                         {processingMessage || "Starting..."}
                       </div>
@@ -920,16 +920,16 @@ export default function App() {
                 {businesses.length} Biz
               </div>
               <div style={{ ...styles.summaryChip, background: "#1a2a1a" }}>
-                <span style={{ ...styles.chipDot, background: "#4CAF50" }} />
+                <span style={{ ...styles.chipDot, background: "#22D47A" }} />
                 {residential.length} Res
               </div>
               <div style={{ ...styles.summaryChip, background: "#2a1a00" }}>
-                <span style={{ ...styles.chipDot, background: "#F5A623" }} />
+                <span style={{ ...styles.chipDot, background: "#F59E0B" }} />
                 {orderedStops.length} Total
               </div>
               {communityVerifiedCount > 0 && (
                 <div style={{ ...styles.summaryChip, background: "#0d1a0d" }}>
-                  <span style={{ ...styles.chipDot, background: "#4CAF50" }} />
+                  <span style={{ ...styles.chipDot, background: "#22D47A" }} />
                   👥 {communityVerifiedCount}
                 </div>
               )}
@@ -981,7 +981,7 @@ export default function App() {
                             onChange={(e) => setFixInput(e.target.value)}
                             placeholder="e.g. 1805 N 16th St, Tampa, FL 33605"
                           />
-                          {fixStatus && <div style={{ fontSize: 11, color: fixStatus.includes("couldn't") || fixStatus.includes("Error") ? "#ff6b6b" : "#F5A623", marginBottom: 6 }}>{fixStatus}</div>}
+                          {fixStatus && <div style={{ fontSize: 11, color: fixStatus.includes("couldn't") || fixStatus.includes("Error") ? "#ff6b6b" : "#00C8FF", marginBottom: 6 }}>{fixStatus}</div>}
                           <div style={{ display: "flex", gap: 8 }}>
                             <button style={{ ...styles.completeBtn, flex: 1, padding: "10px", fontSize: 12 }} onClick={() => handleFixStop(stop, fixInput)}>LOCATE</button>
                             <button style={{ ...styles.saveNoteBtn, flex: 1, padding: "10px", fontSize: 12 }} onClick={() => { setFixingStop(null); setFixStatus(""); }}>Cancel</button>
@@ -1021,7 +1021,7 @@ export default function App() {
                 style={{
                   ...styles.detailBadge,
                   background: (stopTypes[activeStop.id] || activeStop.type) === "business" ? "#1a1200" : "#0d1a0d",
-                  border: `1px solid ${(stopTypes[activeStop.id] || activeStop.type) === "business" ? "#F5A623" : "#4CAF50"}`,
+                  border: `1px solid ${(stopTypes[activeStop.id] || activeStop.type) === "business" ? "#F59E0B" : "#22D47A"}`,
                   borderRadius: 8,
                   cursor: "pointer",
                   padding: "6px 12px",
@@ -1046,7 +1046,7 @@ export default function App() {
                 <span style={{ fontSize: 9, color: "#555", letterSpacing: "0.05em" }}>TAP TO CORRECT</span>
               </button>
               {activeStop.communityVerified && (
-                <div style={{ fontSize: 10, color: "#4CAF50", marginTop: 8, display: "flex", alignItems: "center", gap: 5 }}>
+                <div style={{ fontSize: 10, color: "#22D47A", marginTop: 8, display: "flex", alignItems: "center", gap: 5 }}>
                   <span>👥</span>
                   <span>Verified by {activeStop.communityCount} driver{activeStop.communityCount !== 1 ? "s" : ""}</span>
                 </div>
@@ -1184,19 +1184,19 @@ export default function App() {
                         <div style={{ flex: 1 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                             <span style={{ fontSize: 10, color: "#555" }}>#{stop.seq}</span>
-                            <span style={{ fontSize: 10, color: stop.type === "business" ? "#F5A623" : "#4CAF50" }}>
+                            <span style={{ fontSize: 10, color: stop.type === "business" ? "#F59E0B" : "#22D47A" }}>
                               {stop.type === "business" ? "🏢" : "🏠"}
                             </span>
-                            {isDone && <span style={{ fontSize: 10, color: "#4CAF50" }}>✓ done</span>}
+                            {isDone && <span style={{ fontSize: 10, color: "#22D47A" }}>✓ done</span>}
                           </div>
                           <div style={{ fontSize: 13, color: "#ddd", fontWeight: "bold" }}>{stop.address}</div>
                           <div style={{ fontSize: 11, color: "#555" }}>{stop.city}</div>
                           {!isEditing && note ? (
-                            <div style={{ marginTop: 6, fontSize: 12, color: "#F5A623", fontStyle: "italic" }}>📝 {note}</div>
+                            <div style={{ marginTop: 6, fontSize: 12, color: "#00C8FF", fontStyle: "italic" }}>📝 {note}</div>
                           ) : null}
                         </div>
                         <button
-                          style={{ background: "none", border: "1px solid #2a2a2a", borderRadius: 8, color: isEditing ? "#4CAF50" : "#555", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "inherit", flexShrink: 0, marginLeft: 8 }}
+                          style={{ background: "none", border: "1px solid #2a2a2a", borderRadius: 8, color: isEditing ? "#22D47A" : "#555", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "inherit", flexShrink: 0, marginLeft: 8 }}
                           onClick={() => setEditingNoteId(isEditing ? null : stop.id)}
                         >{isEditing ? "Done" : "Note"}</button>
                       </div>
@@ -1260,8 +1260,8 @@ export default function App() {
                 <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5, marginBottom: googleActive ? 8 : 0 }}>
                   Finds private roads &amp; golf communities Census/Nominatim miss. Set GOOGLE_MAPS_KEY in Railway env vars.
                 </div>
-                {googleActive === "checking" && <div style={{ fontSize: 11, color: "#F5A623" }}>Checking...</div>}
-                {googleActive === "active" && <div style={{ fontSize: 11, color: "#4CAF50" }}>✓ Google Maps active — hard-to-find roads will now geocode</div>}
+                {googleActive === "checking" && <div style={{ fontSize: 11, color: "#00C8FF" }}>Checking...</div>}
+                {googleActive === "active" && <div style={{ fontSize: 11, color: "#22D47A" }}>✓ Google Maps active — hard-to-find roads will now geocode</div>}
                 {googleActive === "missing" && <div style={{ fontSize: 11, color: "#ff6b6b" }}>✗ Key not set — add GOOGLE_MAPS_KEY to Railway environment variables</div>}
                 {googleActive === "error" && <div style={{ fontSize: 11, color: "#ff6b6b" }}>✗ Couldn't reach server</div>}
                 {!googleActive && <div style={{ fontSize: 11, color: "#444", marginTop: 6 }}>Tap to check status</div>}
@@ -1292,7 +1292,7 @@ export default function App() {
                   maxLength={5}
                   onChange={(e) => { setDefaultZip(e.target.value); localStorage.setItem("lm_default_zip", e.target.value); }}
                 />
-                {defaultCity && <div style={{ fontSize: 11, color: "#4CAF50", marginTop: 8 }}>✓ Using {defaultCity}, {defaultState} {defaultZip} as fallback</div>}
+                {defaultCity && <div style={{ fontSize: 11, color: "#22D47A", marginTop: 8 }}>✓ Using {defaultCity}, {defaultState} {defaultZip} as fallback</div>}
               </div>
 
               {/* Businesses First toggle */}
@@ -1304,7 +1304,7 @@ export default function App() {
                 <button
                   style={{
                     width: 52, height: 28, borderRadius: 14,
-                    background: businessesFirst ? "#F5A623" : "#2a2a2a",
+                    background: businessesFirst ? "#F59E0B" : "#1E1E35",
                     border: "none", cursor: "pointer", position: "relative", transition: "background 0.2s",
                   }}
                   onClick={() => {
@@ -1350,7 +1350,7 @@ export default function App() {
                 }}
               >SAVE KEY</button>
               {apiKey && (
-                <div style={{ marginTop: 16, fontSize: 11, color: "#4CAF50", textAlign: "center" }}>
+                <div style={{ marginTop: 16, fontSize: 11, color: "#22D47A", textAlign: "center" }}>
                   ✓ Key saved
                 </div>
               )}
@@ -1383,7 +1383,7 @@ export default function App() {
                 >TEST CONNECTION</button>
               )}
               {processingMessage ? (
-                <div style={{ marginTop: 12, fontSize: 11, color: processingMessage.startsWith("✓") ? "#4CAF50" : "#ff6b6b", textAlign: "center", lineHeight: 1.5 }}>
+                <div style={{ marginTop: 12, fontSize: 11, color: processingMessage.startsWith("✓") ? "#22D47A" : "#ff6b6b", textAlign: "center", lineHeight: 1.5 }}>
                   {processingMessage}
                 </div>
               ) : null}
@@ -1401,35 +1401,28 @@ export default function App() {
         {(screen === screens.HOME || screen === screens.RESULTS || screen === screens.MAP || screen === screens.NOTES || screen === screens.SETTINGS) && (
           <div style={styles.bottomNav}>
             <button
-              style={{ ...styles.navTab, color: screen === screens.HOME ? "#F5A623" : "#555" }}
+              style={{ ...styles.navTab, color: screen === screens.HOME ? "#00C8FF" : "#3A3A5C" }}
               onClick={() => { setScreen(screens.HOME); setCompletedStops([]); setPhotos([]); }}
             >
               <span style={styles.navTabIcon}>⌂</span>
               Home
             </button>
             <button
-              style={{ ...styles.navTab, color: screen === screens.RESULTS ? "#F5A623" : "#555" }}
+              style={{ ...styles.navTab, color: screen === screens.RESULTS ? "#00C8FF" : "#3A3A5C" }}
               onClick={() => setScreen(orderedStops.length > 0 ? screens.RESULTS : screens.CAPTURE)}
             >
               <span style={styles.navTabIcon}>≡</span>
               Route
             </button>
             <button
-              style={{ ...styles.navTab, color: screen === screens.MAP ? "#F5A623" : "#555" }}
+              style={{ ...styles.navTab, color: screen === screens.MAP ? "#00C8FF" : "#3A3A5C" }}
               onClick={() => setScreen(screens.MAP)}
             >
               <span style={styles.navTabIcon}>⊞</span>
               Map
             </button>
             <button
-              style={{ ...styles.navTab, color: screen === screens.NOTES ? "#F5A623" : "#555" }}
-              onClick={() => { setScreen(screens.NOTES); setSearchQuery(""); setEditingNoteId(null); }}
-            >
-              <span style={styles.navTabIcon}>📝</span>
-              Notes
-            </button>
-            <button
-              style={{ ...styles.navTab, color: screen === screens.SETTINGS ? "#F5A623" : "#555" }}
+              style={{ ...styles.navTab, color: screen === screens.SETTINGS ? "#00C8FF" : "#3A3A5C" }}
               onClick={() => setScreen(screens.SETTINGS)}
             >
               <span style={styles.navTabIcon}>⚙</span>
@@ -1447,7 +1440,7 @@ function StopCard({ stop, onTap, onComplete, completed }) {
       style={{
         ...styles.stopCard,
         opacity: completed ? 0.45 : 1,
-        borderLeft: `3px solid ${stop.type === "business" ? "#F5A623" : "#4CAF50"}`,
+        borderLeft: `3px solid ${stop.type === "business" ? "#F59E0B" : "#22D47A"}`,
       }}
       onClick={onTap}
     >
@@ -1463,7 +1456,7 @@ function StopCard({ stop, onTap, onComplete, completed }) {
             {stop.type === "business" ? "🏢" : "🏠"}
           </div>
           {stop.communityVerified && (
-            <div style={{ fontSize: 9, color: "#4CAF50", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
+            <div style={{ fontSize: 9, color: "#22D47A", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
               👥 {stop.communityCount}
             </div>
           )}
@@ -1471,8 +1464,8 @@ function StopCard({ stop, onTap, onComplete, completed }) {
         <button
           style={{
             ...styles.checkBtn,
-            background: completed ? "#4CAF50" : "transparent",
-            border: `2px solid ${completed ? "#4CAF50" : "#333"}`,
+            background: completed ? "#22D47A" : "transparent",
+            border: `2px solid ${completed ? "#22D47A" : "#333"}`,
           }}
           onClick={(e) => { e.stopPropagation(); onComplete(); }}
         >
@@ -1525,7 +1518,7 @@ function MapView({ orderedStops, completedStops, remaining }) {
       let pinW, pinH, fill, stroke, strokeW, numColor, numSize, topLabel;
       if (isNext) {
         pinW = 44; pinH = 54;
-        fill = "#fff"; stroke = "#F5A623"; strokeW = 3;
+        fill = "#fff"; stroke = "#00C8FF"; strokeW = 3;
         numColor = "#000"; numSize = 15;
         topLabel = `<tspan x="22" dy="-4" font-size="8" font-weight="900" letter-spacing="1">NEXT</tspan><tspan x="22" dy="13" font-size="15" font-weight="900">${i + 1}</tspan>`;
       } else if (done) {
@@ -1535,7 +1528,7 @@ function MapView({ orderedStops, completedStops, remaining }) {
         topLabel = `<tspan x="13" dy="0" font-size="11">✓</tspan>`;
       } else {
         pinW = 36; pinH = 44;
-        fill = stop.type === "business" ? "#F5A623" : "#22c55e";
+        fill = stop.type === "business" ? "#F59E0B" : "#22D47A";
         stroke = "#fff"; strokeW = 2.5;
         numColor = "#000"; numSize = 14;
         topLabel = `<tspan x="${pinW / 2}" dy="0" font-size="${numSize}" font-weight="900">${i + 1}</tspan>`;
@@ -1629,11 +1622,11 @@ function MapView({ orderedStops, completedStops, remaining }) {
           }
         }
         if (!destroyed && allRoadCoords.length > 1) {
-          L.polyline(allRoadCoords, { color: "#F5A623", weight: 3, opacity: 0.75 }).addTo(map);
+          L.polyline(allRoadCoords, { color: "#00C8FF", weight: 3, opacity: 0.75 }).addTo(map);
         }
       } catch (_) {
         if (!destroyed && allCoords.length > 1) {
-          L.polyline(allCoords, { color: "#F5A623", weight: 2.5, dashArray: "6 4", opacity: 0.7 }).addTo(map);
+          L.polyline(allCoords, { color: "#00C8FF", weight: 2.5, dashArray: "6 4", opacity: 0.7 }).addTo(map);
         }
       }
     })();
@@ -1650,21 +1643,21 @@ function MapView({ orderedStops, completedStops, remaining }) {
   return (
     <div>
       <div ref={containerRef} style={{ width: "100%", height: "calc(100dvh - 120px)" }} />
-      <div style={{ display: "flex", gap: 16, padding: "10px 20px", borderTop: "1px solid #1a1a1a", justifyContent: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#666" }}>
-          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#fff", border: "2px solid #F5A623" }} /> Next
+      <div style={{ display: "flex", gap: 16, padding: "10px 20px", borderTop: "1px solid #14142A", justifyContent: "center", background: "#0A0A18" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
+          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#fff", border: "2px solid #00C8FF" }} /> Next
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#666" }}>
-          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#F5A623" }} /> Business
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
+          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#F59E0B" }} /> Business
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#666" }}>
-          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#22c55e" }} /> Residential
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
+          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#22D47A" }} /> Residential
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#666" }}>
-          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#ccc" }} /> Done
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
+          <div style={{ width: 10, height: 13, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#2A2A45" }} /> Done
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#666" }}>
-          <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#4A90E2", border: "2px solid #fff", boxShadow: "0 0 0 2px rgba(74,144,226,0.4)" }} /> You
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#3A3A5C" }}>
+          <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#4A90E2", border: "2px solid #0A0A18", boxShadow: "0 0 0 2px rgba(74,144,226,0.4)" }} /> You
         </div>
       </div>
     </div>
@@ -1698,7 +1691,7 @@ const styles = {
   },
   logoMark: {
     fontSize: 36,
-    color: "#F5A623",
+    color: "#00C8FF",
     display: "block",
     marginBottom: 8,
   },
@@ -1726,21 +1719,21 @@ const styles = {
   },
   statCard: {
     flex: 1,
-    background: "#161616",
+    background: "#0D0D1C",
     borderRadius: 12,
     padding: "12px 8px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    border: "1px solid #222",
+    border: "1px solid #1E1E35",
   },
-  statNum: { fontSize: 22, fontWeight: "bold", color: "#F5A623" },
-  statLabel: { fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: 1, marginTop: 2, textAlign: "center" },
+  statNum: { fontSize: 22, fontWeight: "bold", color: "#00C8FF" },
+  statLabel: { fontSize: 9, color: "#3A3A5C", textTransform: "uppercase", letterSpacing: 1, marginTop: 2, textAlign: "center" },
   primaryBtn: {
     margin: "0",
     width: "100%",
     padding: "16px",
-    background: "#F5A623",
+    background: "#00C8FF",
     color: "#000",
     border: "none",
     borderRadius: 12,
@@ -1762,7 +1755,7 @@ const styles = {
     gap: 10,
   },
   tipRow: { display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: "#555" },
-  tipDot: { width: 6, height: 6, borderRadius: "50%", background: "#F5A623", flexShrink: 0 },
+  tipDot: { width: 6, height: 6, borderRadius: "50%", background: "#00C8FF", flexShrink: 0 },
 
   // NAV BAR
   navBar: {
@@ -1773,13 +1766,13 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     padding: "14px 20px 10px",
-    borderBottom: "1px solid #1a1a1a",
-    background: "#111",
+    borderBottom: "1px solid #14142A",
+    background: "#0A0A18",
   },
   backBtn: {
     background: "none",
     border: "none",
-    color: "#F5A623",
+    color: "#00C8FF",
     fontSize: 16,
     cursor: "pointer",
     fontFamily: "inherit",
@@ -1787,8 +1780,8 @@ const styles = {
     minWidth: 60,
     minHeight: 44,
   },
-  navTitle: { fontSize: 14, fontWeight: "bold", color: "#fff", letterSpacing: "0.05em", textTransform: "uppercase" },
-  stopCount: { fontSize: 12, color: "#F5A623", fontWeight: "bold" },
+  navTitle: { fontSize: 14, fontWeight: "bold", color: "#E8E8FF", letterSpacing: "0.08em", textTransform: "uppercase" },
+  stopCount: { fontSize: 12, color: "#00C8FF", fontWeight: "bold" },
 
   // CAPTURE
   captureInstructions: {
@@ -1808,8 +1801,8 @@ const styles = {
     borderRadius: 10,
     overflow: "hidden",
     position: "relative",
-    border: "2px solid #F5A623",
-    background: "#1a1a1a",
+    border: "2px solid #00C8FF",
+    background: "#0D0D1C",
   },
   thumbImg: { width: "100%", height: "100%", objectFit: "cover" },
   thumbLabel: {
@@ -1874,23 +1867,23 @@ const styles = {
     width: 120,
     height: 120,
     borderRadius: "50%",
-    border: "4px solid #F5A623",
+    border: "4px solid #00C8FF",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0 0 24px rgba(245,166,35,0.3)",
+    boxShadow: "0 0 28px rgba(0,200,255,0.35)",
     animation: "spin 2s linear infinite",
   },
   processingInner: {
     width: 90,
     height: 90,
     borderRadius: "50%",
-    background: "#1a1400",
+    background: "#070714",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
-  processingPct: { fontSize: 22, fontWeight: "bold", color: "#F5A623" },
+  processingPct: { fontSize: 22, fontWeight: "bold", color: "#00C8FF" },
   processingSteps: {
     display: "flex",
     flexDirection: "column",
@@ -1917,17 +1910,18 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: 6,
-    background: "#1a1200",
+    background: "#0D0D1C",
     borderRadius: 20,
     padding: "5px 10px",
     fontSize: 11,
-    color: "#ccc",
+    color: "#B0B0D0",
+    border: "1px solid #1E1E35",
   },
   chipDot: {
     width: 6,
     height: 6,
     borderRadius: "50%",
-    background: "#F5A623",
+    background: "#00C8FF",
     flexShrink: 0,
   },
   stopList: {
@@ -1944,17 +1938,17 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: 10,
-    background: "#161616",
+    background: "#0D0D1C",
     borderRadius: 10,
     padding: "12px 12px",
     marginBottom: 8,
     cursor: "pointer",
-    border: "1px solid #1e1e1e",
+    border: "1px solid #1E1E35",
     transition: "opacity 0.2s",
   },
   stopSeq: {
     fontSize: 11,
-    color: "#555",
+    color: "#3A3A5C",
     width: 24,
     textAlign: "center",
     flexShrink: 0,
@@ -1963,7 +1957,7 @@ const styles = {
   stopName: {
     fontSize: 12,
     fontWeight: "bold",
-    color: "#F5A623",
+    color: "#F59E0B",
     marginBottom: 2,
     whiteSpace: "nowrap",
     overflow: "hidden",
@@ -1971,14 +1965,14 @@ const styles = {
   },
   stopAddr: {
     fontSize: 13,
-    color: "#ddd",
+    color: "#C8C8E8",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
   stopCity: {
     fontSize: 11,
-    color: "#555",
+    color: "#3A3A5C",
     marginTop: 2,
   },
   stopRight: {
@@ -2005,62 +1999,62 @@ const styles = {
   // DETAIL
   detailCard: {
     margin: "16px 20px",
-    background: "#161616",
+    background: "#0D0D1C",
     borderRadius: 16,
     padding: "20px",
-    border: "1px solid #2a2a2a",
+    border: "1px solid #1E1E35",
   },
   detailBadge: {
     fontSize: 11,
-    color: "#F5A623",
-    letterSpacing: "0.1em",
+    color: "#00C8FF",
+    letterSpacing: "0.12em",
     marginBottom: 10,
     textTransform: "uppercase",
   },
   detailName: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#E8E8FF",
     marginBottom: 6,
   },
   detailAddress: {
     fontSize: 15,
-    color: "#ccc",
+    color: "#B0B0D0",
     marginBottom: 4,
   },
   detailCity: {
     fontSize: 13,
-    color: "#666",
+    color: "#4A4A70",
   },
   notesWrap: {
     margin: "12px 20px 0",
   },
   notesLabel: {
     fontSize: 10,
-    color: "#444",
+    color: "#353555",
     letterSpacing: "0.15em",
     marginBottom: 6,
   },
   notesInput: {
     width: "100%",
-    background: "#161616",
-    border: "1px solid #2a2a2a",
+    background: "#0D0D1C",
+    border: "1px solid #1E1E35",
     borderRadius: 10,
     padding: "12px 14px",
     fontSize: 13,
-    color: "#ddd",
+    color: "#C8C8E8",
     fontFamily: "'Courier New', Courier, monospace",
     outline: "none",
     boxSizing: "border-box",
   },
   notesTextarea: {
     width: "100%",
-    background: "#161616",
-    border: "1px solid #2a2a2a",
+    background: "#0D0D1C",
+    border: "1px solid #1E1E35",
     borderRadius: 10,
     padding: "14px",
     fontSize: 13,
-    color: "#ddd",
+    color: "#C8C8E8",
     fontFamily: "'Courier New', Courier, monospace",
     outline: "none",
     boxSizing: "border-box",
@@ -2072,9 +2066,9 @@ const styles = {
     marginTop: 8,
     width: "100%",
     padding: "12px",
-    background: "#1a1a1a",
-    color: "#F5A623",
-    border: "1px solid #F5A623",
+    background: "#0A0A18",
+    color: "#00C8FF",
+    border: "1px solid #00C8FF",
     borderRadius: 10,
     fontSize: 12,
     fontWeight: "900",
@@ -2091,9 +2085,9 @@ const styles = {
   navBtn: {
     width: "100%",
     padding: "14px",
-    background: "#1a1a1a",
-    color: "#fff",
-    border: "1px solid #333",
+    background: "#0D0D1C",
+    color: "#C8C8E8",
+    border: "1px solid #1E1E35",
     borderRadius: 12,
     fontSize: 14,
     fontWeight: "bold",
@@ -2104,7 +2098,7 @@ const styles = {
   completeBtn: {
     width: "100%",
     padding: "14px",
-    background: "#F5A623",
+    background: "#22D47A",
     color: "#000",
     border: "none",
     borderRadius: 12,
@@ -2116,32 +2110,32 @@ const styles = {
   },
   detailMeta: {
     margin: "16px 20px 0",
-    background: "#161616",
+    background: "#0D0D1C",
     borderRadius: 12,
     padding: "4px 16px",
-    border: "1px solid #1e1e1e",
+    border: "1px solid #1E1E35",
   },
   metaRow: {
     display: "flex",
     justifyContent: "space-between",
     padding: "10px 0",
-    borderBottom: "1px solid #1e1e1e",
+    borderBottom: "1px solid #14142A",
     fontSize: 13,
   },
-  metaLabel: { color: "#555" },
-  metaVal: { color: "#ccc", fontWeight: "bold" },
+  metaLabel: { color: "#3A3A5C" },
+  metaVal: { color: "#C8C8E8", fontWeight: "bold" },
   nextUpWrap: { padding: "16px 20px 0" },
-  nextUpLabel: { fontSize: 10, color: "#444", letterSpacing: "0.15em", marginBottom: 8 },
+  nextUpLabel: { fontSize: 10, color: "#353555", letterSpacing: "0.15em", marginBottom: 8 },
   nextUpCard: {
-    background: "#161616",
+    background: "#0D0D1C",
     borderRadius: 10,
     padding: "12px 16px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     fontSize: 13,
-    color: "#888",
-    border: "1px solid #1e1e1e",
+    color: "#5A5A80",
+    border: "1px solid #1E1E35",
   },
   nextUpType: { fontSize: 16 },
 
@@ -2154,8 +2148,8 @@ const styles = {
     maxWidth: 500,
     margin: "0 auto",
     display: "flex",
-    background: "#111",
-    borderTop: "1px solid #1e1e1e",
+    background: "#0A0A18",
+    borderTop: "1px solid #14142A",
     padding: "8px 0 env(safe-area-inset-bottom, 16px)",
     zIndex: 100,
   },
