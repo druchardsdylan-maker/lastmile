@@ -1626,28 +1626,20 @@ function MapView({ orderedStops, completedStops, remaining }) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div>
-      <div ref={containerRef} style={{ width: "100%", height: "calc(100dvh - 120px)" }} />
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 16px", borderTop: "1px solid #14142A", background: "#0A0A18" }}>
-        <div style={{ display: "flex", gap: 10, flex: 1, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#3A3A5C" }}>
-            <div style={{ width: 9, height: 12, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#fff", border: "2px solid #00C8FF" }} /> Next
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#3A3A5C" }}>
-            <div style={{ width: 9, height: 12, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#F59E0B" }} /> Biz
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#3A3A5C" }}>
-            <div style={{ width: 9, height: 12, borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%", background: "#22D47A" }} /> Res
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#3A3A5C" }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#4A90E2", border: "1.5px solid #0A0A18", boxShadow: "0 0 0 2px rgba(74,144,226,0.35)" }} /> You
-          </div>
-        </div>
-        <button
-          onClick={() => setSatellite((s) => !s)}
-          style={{ background: satellite ? "#00C8FF" : "#1E1E35", border: "none", borderRadius: 8, color: satellite ? "#000" : "#5A5A80", fontSize: 11, fontWeight: "bold", padding: "6px 12px", cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.05em", flexShrink: 0 }}
-        >{satellite ? "🛰 SAT" : "🗺 MAP"}</button>
-      </div>
+    <div style={{ position: "relative" }}>
+      <div ref={containerRef} style={{ width: "100%", height: "calc(100dvh - 110px)" }} />
+      <button
+        onClick={() => setSatellite((s) => !s)}
+        style={{
+          position: "absolute", top: 12, right: 12, zIndex: 1000,
+          background: satellite ? "#00C8FF" : "#0A0A18",
+          border: `1px solid ${satellite ? "#00C8FF" : "#1E1E35"}`,
+          borderRadius: 8, color: satellite ? "#000" : "#8888AA",
+          fontSize: 11, fontWeight: "bold", padding: "7px 12px",
+          cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.05em",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
+        }}
+      >{satellite ? "🛰 SAT" : "🗺 MAP"}</button>
     </div>
   );
 }
